@@ -91,25 +91,6 @@ class ClientSocket extends Socket{
 
 	//Downloads directly from the server
 	servDirect(String filename){
-		try{
-			writer = new PrintWriter(getOutputAddress());
-			//Signals server for a direct download
-			writer.println("d"+filename);
-			writer.close();
-			File f = new File("local_files/"+filename);
-			if (f.createNewFile()){
-				writer = new PrintWriter(new FileWriter("local_files"+filename));
-				reader = new BufferedReader(getInputAddress());
-				try{
-					while (true){
-						char[] buffer[];
-
-						writer.print();
-					}
-				}
-			}
-		}
-		return false;
 	}
 
 	//Receives the IPs of corresponding servers to the server
