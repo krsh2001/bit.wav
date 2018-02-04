@@ -3,12 +3,13 @@ import java.io.*;
 
 class ClientSocket extends Socket{
 
-	private Socket sockListen;
+	private ServerSocket sockListen;
 	private PrintWriter writer;
 	private BufferedReader reader;
 	private ByteArrayInputStream byteReader;
 	private ByteArrayOutputStream byteWriter;
-	InetAddress serverAddress;
+	private InetAddress serverAddress;
+	private String[] peers;
 
 	public ClientSocket(int port, InetAddress servAddr;){
 		super();
@@ -79,7 +80,7 @@ class ClientSocket extends Socket{
 			writer.println("g" + filename);
 			writer.close();
 			reader = new BufferedReader(getInputAddress());
-			return Boolean.parseBoolean(reader.readLine());
+			return String.split(reader, ';');
 		} catch (UnknownHostException e){
 			return null;
 			System.out.println("Unknown host: " + e.getMessage());
@@ -91,30 +92,6 @@ class ClientSocket extends Socket{
 
 	//Downloads directly from the server
 	servDirect(String filename){
-		try{
-			writer = new PrintWriter(getOutputAddress());
-			//Signals server for a direct download
-			writer.println("d"+filename);
-			writer.close();
-			File f = new File("local_files/"+filename);
-			if (f.createNewFile()){
-				writer = new PrintWriter(new FileWriter("local_files"+filename));
-				reader = new BufferedReader(getInputAddress());
-				try{
-					while (true){
-						char[] buffer[];
-
-						writer.print();
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	//Receives the IPs of corresponding servers to the server
-	receiveIPs(){
-
 	}
 
 	//Assigns tasks to the peer servers
@@ -129,13 +106,33 @@ class ClientSocket extends Socket{
 
 	//Controls the flow of the program
 	control(){
-		//TODO: open the server
-		
+		Socket sock = null;
 		//threaded
 		while (/*ACTIVE*/){
-			if(/* TRIGGERED TO SEND REQUEST*/){
-				if (sendRequest(filename))
+			try{
+				sock = sockListen.accept();
+			} catch(Exception e){}
+			if (/*TRIGGERED TO REQUEST IP*/){
+				System.out.println(requestFileList());
+			}
+			if(/*TRIGGERED TO SEND REQUEST*/){
+				if (sendRequest(filename)){
 					receiveIPs(filename);
+				}
+				else
+					servDirect(filename);
+			}
+			if (/*CONTINUING A DOWNLOAD FROM PEERS*/){
+				assignTasks();
+			}
+			if (sock != null){
+				try{
+					code = new BufferedReader(sock.getInputStream()).getLine();
+					if (code.charAt(0) == 'r'){
+						code = code.substr(1);
+					}
+				} catch (Exception e){ continue; }
+				peers = checkFile(code);
 			}
 		}
 	}
