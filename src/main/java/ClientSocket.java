@@ -12,7 +12,7 @@ class ClientSocket extends Socket{
 	private String[] peers;
 	private int fileSize;
 	private boolean dl;
-	private int tasks[], peerTasks[];
+	private int tasks[], peerTasks[][];
 	private String filename;
 	boolean receivedTasks[];
 
@@ -57,7 +57,7 @@ class ClientSocket extends Socket{
 			try{
                               writer = new PrintWriter(getOutputAddress());
                                //Signal the server for file list
-			       writer.println ("f");
+			       writer.println ("|f");
                                writer.close();
 				reader = new BufferedReader (getInputAddress());
 				try{
@@ -83,10 +83,13 @@ class ClientSocket extends Socket{
 		try{
 			writer = new PrintWriter(getOutputAddress());
 			//Signal the server for get
-			writer.println("g" + filename);
+			writer.println("|g");
+			writer.println(filename);
+			this.filename = filename;
 			writer.close();
 			reader = new BufferedReader(getInputAddress());
-			return String.split(reader, ';');
+			if (reader.getLine().equals("|d");
+				return String.split(reader.getLine(), ';');
 		} catch (UnknownHostException e){
 			return null;
 			System.out.println("Unknown host: " + e.getMessage());
@@ -101,15 +104,17 @@ class ClientSocket extends Socket{
 	}
 
 	//Assigns tasks to the peer servers if dead, receives data
-	receiveData(){
+	receiveData(boolean init){
 		Socket peer;
+		boolean death = init;
 		for (int i = 0 ; i < peers.length() ; i++){
-			peer = new Socket(InetAddress.getbyAddress(ByteBuffer.allocate(4).putInt(Integer.parseInt(peers[i]).array()), 9637));
+			peer = new Socket(InetAddress.getbyAddress(ByteBuffer.allocate(4).putInt(Integer.parseInt(peers[i]).array())), 9637);
 			try{
-				write = new PrintWriter (peer.getOutputAddress());
-				write.close();
+				writer = new PrintWriter (peer.getOutputAddress());
+				writer.print("");
+				writer.close();
 			} catch (UnknownHostException e){
-				if (peers.length() > 1){
+					death = true;
 					int orphanedTasks[], orplen = 0;
 					for (int z = 0 ; z < peerTasks[i].length(); z++){
 						if (!receivedTasks(peertasks[i][z])){
@@ -123,22 +128,51 @@ class ClientSocket extends Socket{
 							orphanedTasks[z] = peerTasks[i][z];
 						}
 					}
-					String temp[] = new String[peers.length()-1];
+					String temp[][] = new String[peers.length()-1][peers[0].length()+orphanedTasks.length()/peers.length()];
 					int q = 0;
 					for (int z = 0 ; z < peers.length() ; z++){
 						if (z == i)
 							continue;
-						temp[q] = peers[z];
+						for (int y = 0 ; y < temp[0][0].length(); y++){
+							if (y < peers.length())
+								temp[q][y] = peers[z][y];
+							else if (4 * (y-peers.length()) < orplen)
+								temp[q][y] = orphanedTasks[4*(y-peers.length())];
+						}
 						q++;
 					}
 					i--;
 					peers = temp;
-				else{
-					servDirect(filename);
-				}	
-			}
 			//END OF REDISTRIBUTION CHECK
-		}	
+			}
+			if (peers.length() == 0){
+				servDirect(filename);
+				return;
+			}
+			if (death){
+				peer = new Socket(InetAddress.getbyAddress(ByteBuffer.allocate(4).putInt(Integer.parseInt(peers[i]).array())),9637);
+				try{
+					writer = new PrintWriter(peer.getOutputAddress());
+					writer.println("|o");
+					for (int z = 0 ; z < peerTasks[i].length() ; z++){
+						writer.println(peerTasks[i][z]);
+					}
+					writer.println("|c");
+					for (int z = 0 ; z < receivedTasks.length();z++){
+						if (IntStream.of(peerTasks[i][z]).anyMatch(x->x==z) && receivedTasks(z))
+						{
+							writer.println(z); //prints the tasks that need no completion
+						}
+					}
+					writer.println("|s");
+					writer.close();
+				} catch (Exception e){ System.out.println(e.getMessage()); }
+			}
+			try{
+				reader = new BufferedReader(peer.getInputAddress());
+				byte data[] = //TODO
+			}
+		}
 	}
 
 	//Sends data corresponding to assigned tasks
@@ -154,7 +188,7 @@ class ClientSocket extends Socket{
 			try{
 				sock = sockListen.accept();
 			} catch(Exception e){}
-			if (/*TRIGGERED TO REQUEST IP*/){
+			if (/*TRIGGERED TO REQUEST files*/){
 				System.out.println(requestFileList());
 			}
 			if(/*TRIGGERED TO SEND REQUEST*/){
@@ -166,12 +200,13 @@ class ClientSocket extends Socket{
 				for (int i = 0 ; i < Math.ceil(filesize/1024) ; i++){
 					peertasks[i%peers.length()][i/(i%peers.length())] = i;
 				}
+				receiveData(true);
 			}
 				else
 					servDirect(filename);
 			}
 			if (dl){
-				receiveData();
+				receiveData(false);
 			}
 			if (sock != null && (dl)){
 				try{
