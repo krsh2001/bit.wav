@@ -14,12 +14,12 @@ public class QuickStart {
     public static void main(String[] args) {
         try {
             HttpClient httpClient = HttpClients.createDefault ();
-            HttpGet httpget = new HttpGet ("http://localhost:8008/files/school.jpg");
+            HttpGet httpget = new HttpGet ("http://localhost:8008/files/piss.mov");
             HttpResponse response = httpClient.execute (httpget);
             HttpEntity entity = response.getEntity ();
             if (entity != null) {
                 InputStream IS = entity.getContent ();
-                FileOutputStream FOS = new FileOutputStream(new File ("local_files/school.jpg"));
+                FileOutputStream FOS = new FileOutputStream(new File ("local_files/piss.mov"));
                 int inByte;
                 while((inByte = IS.read()) != -1)
                     FOS.write(inByte);

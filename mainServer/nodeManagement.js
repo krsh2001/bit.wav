@@ -11,6 +11,7 @@ var mysql = require('mysql');
 var options = {key: fs.readFileSync('credentials/key.pem', 'utf8'), cert: fs.readFileSync('credentials/cert.pem', 'utf8'), passphrase: 'bassword'};
 var app = express();
 var router = express.Router();
+var remoteIP = '';
 
 // restful API setup
 
@@ -34,6 +35,9 @@ connection.connect(function(err) {
 // setup routing
 
 app.use(function(req, res, next) {
+	var fip = req.socket.remoteAddress.split(':');
+	console.log('Incoming connection from ' + fip[fip.length - 1]);
+	
 	next();
 });
 
@@ -51,6 +55,16 @@ router.get('/fileinfo/:name', function(req, res) {
 	});
 });
 
+router.get('/fileinfo/:name/filesize', function(req, res) {
+	connection.query('select filesize from fileSummaries where name = \'' + req.params.name + '\'', function(error, result) {
+		if (error) {
+			throw error;
+		}
+
+		res.json(result)
+	});
+});
+
 router.get('/ips/:id', function(req, res) {
 	connection.query('select ip from activeips where id = \'' + req.params.file + '\'', function(error, result) {
 		if (error) {
@@ -61,12 +75,13 @@ router.get('/ips/:id', function(req, res) {
 	});
 });
 
-router.post('/ips/:ip/:id', function(req, res) {
-	connection.query('insert into activeips (ip, id) values (\'' + req.params.ip + '\', \'' + req.params.id + '\')', function(error, result) {
+router.post('/ips/:id', function(req, res) {
+	var fip =  req.socket.remoteAddress.split(':');
+	connection.query('insert into activeips (ip, id) values (\'' + fip[fip.length - 1] + '\', \'' + req.params.id + '\')', function(error, result) {
 		if (error) {
 			throw error;
 		}
-
+		console.log(req.params.id);
 		res.json(result);
 	});
 });
