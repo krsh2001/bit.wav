@@ -10,9 +10,15 @@ class ClientSocket extends Socket{
 	private ByteArrayOutputStream byteWriter;
 	private InetAddress serverAddress;
 	private String[] peers;
+	private int fileSize;
+	private boolean dl;
+	private int tasks[], peerTasks[];
+	private String filename;
+	boolean receivedTasks[];
 
 	public ClientSocket(int port, InetAddress servAddr;){
 		super();
+		dl = false;
 		sockListen = new Socket(port);
 	}
 
@@ -94,9 +100,45 @@ class ClientSocket extends Socket{
 	servDirect(String filename){
 	}
 
-	//Assigns tasks to the peer servers
-	assignTasks(){
-
+	//Assigns tasks to the peer servers if dead, receives data
+	receiveData(){
+		Socket peer;
+		for (int i = 0 ; i < peers.length() ; i++){
+			peer = new Socket(InetAddress.getbyAddress(ByteBuffer.allocate(4).putInt(Integer.parseInt(peers[i]).array()), 9637));
+			try{
+				write = new PrintWriter (peer.getOutputAddress());
+				write.close();
+			} catch (UnknownHostException e){
+				if (peers.length() > 1){
+					int orphanedTasks[], orplen = 0;
+					for (int z = 0 ; z < peerTasks[i].length(); z++){
+						if (!receivedTasks(peertasks[i][z])){
+							orplen++;
+						}
+					}
+					orphanedTasks = new int[orplen];
+					orplen = 0;
+					for (int z = 0 ; z < peerTasks[i].length() ; z++){
+						if (!receivedTasks(peerTasks[i][z])){
+							orphanedTasks[z] = peerTasks[i][z];
+						}
+					}
+					String temp[] = new String[peers.length()-1];
+					int q = 0;
+					for (int z = 0 ; z < peers.length() ; z++){
+						if (z == i)
+							continue;
+						temp[q] = peers[z];
+						q++;
+					}
+					i--;
+					peers = temp;
+				else{
+					servDirect(filename);
+				}	
+			}
+			//END OF REDISTRIBUTION CHECK
+		}	
 	}
 
 	//Sends data corresponding to assigned tasks
@@ -108,7 +150,7 @@ class ClientSocket extends Socket{
 	control(){
 		Socket sock = null;
 		//threaded
-		while (/*ACTIVE*/){
+		while (true){
 			try{
 				sock = sockListen.accept();
 			} catch(Exception e){}
@@ -116,16 +158,22 @@ class ClientSocket extends Socket{
 				System.out.println(requestFileList());
 			}
 			if(/*TRIGGERED TO SEND REQUEST*/){
-				if (sendRequest(filename)){
-					receiveIPs(filename);
+				receivedTasks = new int[Math.ceil(fileSize/1024)];
+				peers = sendRequest(filename);
+				for (int i = 0 ; i < peers.length() ; i++) {
+					peerTasks[i] = new int[Math.ceil(fileSize/1024) / peers.length()];
 				}
+				for (int i = 0 ; i < Math.ceil(filesize/1024) ; i++){
+					peertasks[i%peers.length()][i/(i%peers.length())] = i;
+				}
+			}
 				else
 					servDirect(filename);
 			}
-			if (/*CONTINUING A DOWNLOAD FROM PEERS*/){
-				assignTasks();
+			if (dl){
+				receiveData();
 			}
-			if (sock != null){
+			if (sock != null && (dl)){
 				try{
 					code = new BufferedReader(sock.getInputStream()).getLine();
 					if (code.charAt(0) == 'r'){
