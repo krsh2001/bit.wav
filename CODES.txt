@@ -4,3 +4,4 @@ g: request a file
 d: download a file from the server
 i: request peer IPs
 r: ask if file exists on server
+o: Adding orphaned files
