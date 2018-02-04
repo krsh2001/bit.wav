@@ -34,7 +34,6 @@ connection.connect(function(err) {
 // setup routing
 
 app.use(function(req, res, next) {
-	console.log('Connection made.');
 	next();
 });
 
@@ -48,8 +47,28 @@ router.get('/file/:fileinfo', function(req, res) {
 	});
 });
 
-router.get('/ips/:file', function(rec, res) {
-	connection.query('select ip from activeips where id = \'' + rec.params.file + '\'', function(error, result) {
+router.get('/ips/:id', function(req, res) {
+	connection.query('select ip from activeips where id = \'' + req.params.file + '\'', function(error, result) {
+		if (error) {
+			throw error;
+		}
+
+		res.send(result);
+	});
+});
+
+router.post('/ips/:ip/:id', function(req, res) {
+	connection.query('insert into activeips (ip, id) values (\'' + req.params.ip + '\', \'' + req.params.id + '\')', function(error, result) {
+		if (error) {
+			throw error;
+		}
+
+		res.send(result);
+	});
+});
+
+router.delete('/ips/:ip', function(req, res) {
+	connection.query('delete from  activeips where ip=\'' + req.params.ip + '\'', function(error, result) {
 		if (error) {
 			throw error;
 		}
