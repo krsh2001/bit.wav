@@ -37,13 +37,17 @@ app.use(function(req, res, next) {
 	next();
 });
 
-router.get('/file/:fileinfo', function(req, res) {
-	connection.query('select * from fileSummaries where name = \'' + req.params.fileinfo + '\'', function(error, result) {
+router.get('/files/:id', function(req, res) {
+	res.download('assets/' + req.params.id);
+});
+
+router.get('/fileinfo/:name', function(req, res) {
+	connection.query('select * from fileSummaries where name = \'' + req.params.name + '\'', function(error, result) {
 		if (error) {
 			throw error;
 		}
 
-		res.send(result);
+		res.json(result);
 	});
 });
 
@@ -53,7 +57,7 @@ router.get('/ips/:id', function(req, res) {
 			throw error;
 		}
 
-		res.send(result);
+		res.json(result);
 	});
 });
 
@@ -63,7 +67,7 @@ router.post('/ips/:ip/:id', function(req, res) {
 			throw error;
 		}
 
-		res.send(result);
+		res.json(result);
 	});
 });
 
@@ -73,7 +77,7 @@ router.delete('/ips/:ip', function(req, res) {
 			throw error;
 		}
 
-		res.send(result);
+		res.json(result);
 	});
 });
 
@@ -82,5 +86,5 @@ app.use('/', router);
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(options, app);
 
-httpServer.listen(8999);
+httpServer.listen(8008);
 httpsServer.listen(8443);
