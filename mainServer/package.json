@@ -1,0 +1,27 @@
+{
+  "name": "bit.wave-idserver",
+  "version": "1.0.0",
+  "description": "File ID server for the bit.wav music service.",
+  "main": "nodeManagement.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Philip-Nicolas/bit.wav.git"
+  },
+  "keywords": [
+    "music",
+    "decentralized"
+  ],
+  "author": "radioactive LLamas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Philip-Nicolas/bit.wav/issues"
+  },
+  "homepage": "https://github.com/Philip-Nicolas/bit.wav#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "mysql": "^2.15.0"
+  }
+}
