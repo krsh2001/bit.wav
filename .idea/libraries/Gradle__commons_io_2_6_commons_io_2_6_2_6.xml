@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: commons-io-2.6:commons-io-2.6:2.6">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/Could not find commons-io-2.6:commons-io-2.6:2.6.&#13;&#10;Searched in the following locations:&#13;&#10;    https:/repo1.maven.org/maven2/commons-io-2/6/commons-io-2.6/2.6/commons-io-2.6-2.6.pom&#13;&#10;    https:/repo1.maven.org/maven2/commons-io-2/6/commons-io-2.6/2.6/commons-io-2.6-2.6.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
