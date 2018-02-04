@@ -6,6 +6,7 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
 	private final byte[] SERVERIP = {(byte)172, (byte)17, (byte)51, (byte)43}
+	class ClientApp{
 	public boolean confirmFile(String filename){
 		try{
 			Socket client = new Socket(InetAddress.getByAddress(SERVERIP),8008);
