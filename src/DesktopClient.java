@@ -1,11 +1,12 @@
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
 
 public class DesktopClient {
-    private static JFrame setup = new JFrame("bit.wav (Desktop Client)");
+    public static JFrame setup = new JFrame("bit.wav (Desktop Client)");
     public static String songRequest;
     public static ProcessBuilder pb;
     public static Process start;
@@ -15,20 +16,26 @@ public class DesktopClient {
         Font font2 = new Font ("Nexa Regular", Font.BOLD, 16);
         JLabel title = new JLabel("bit.wav",  SwingConstants.CENTER);
         JLabel label2 = new JLabel("Enter the name of the file to be played:");
-        TextField field = new TextField(50);
+        TextField field = new TextField(35);
 
         field.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     songRequest = field.getText();
-                    pb = new ProcessBuilder("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe", songRequest);
+                    boolean check = new File("assets/", songRequest).exists();
+
+                    if (check) {
+                        pb = new ProcessBuilder("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe", "assets/" + songRequest);
+                    } else {
+                        // Code for server retrieval
+                    }
+
                     try {
                         start = pb.start();
                     } catch (IOException x){
 
                     }
-                    System.out.println (songRequest);
                 }
             }
         });
@@ -57,3 +64,4 @@ public class DesktopClient {
         gameLauncher();
     }
 }
+
