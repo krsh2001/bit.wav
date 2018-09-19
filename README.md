@@ -14,7 +14,7 @@ Import bit.wav as a project into your favorite Java IDE. We used [IntelliJ IDEA]
 ## Built With
 
 * [Java](https://docs.oracle.com/javase/8/docs/) - The language used
-* [Apache Commons IO](https://commons.apache.org/proper/commons-io/download_io.cgi) - The net ;ibrary used
+* [Apache Commons IO](https://commons.apache.org/proper/commons-io/download_io.cgi) - The net library used
 
 ## Authors
 
